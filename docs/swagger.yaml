@@ -1,0 +1,309 @@
+basePath: /.
+definitions:
+  models.Category:
+    properties:
+      category_id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Comment:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      customer_name:
+        type: string
+      film_id:
+        type: integer
+      id:
+        type: integer
+    required:
+    - comment
+    - customer_name
+    - film_id
+    type: object
+  models.CommentRequest:
+    properties:
+      comment:
+        type: string
+      customer_name:
+        type: string
+    required:
+    - comment
+    - customer_name
+    type: object
+  models.ErrorResponse:
+    description: Error response structure.
+    properties:
+      details:
+        example: database connection failed
+        type: string
+      error:
+        example: Failed to retrieve films
+        type: string
+    type: object
+  models.Film:
+    properties:
+      actors:
+        items:
+          type: string
+        type: array
+      categories:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      film_id:
+        type: integer
+      language_id:
+        type: integer
+      last_update:
+        type: string
+      length:
+        type: integer
+      rating:
+        type: string
+      release_year:
+        type: integer
+      rental_duration:
+        type: integer
+      rental_rate:
+        type: number
+      replacement_cost:
+        type: number
+      special_features:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    required:
+    - title
+    type: object
+  models.FilmListResponse:
+    properties:
+      films:
+        items:
+          $ref: '#/definitions/models.Film'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  models.WelcomeResponse:
+    description: Welcome message response.
+    properties:
+      message:
+        example: Welcome to Mockbuster Movie API!
+        type: string
+    type: object
+host: localhost:8080.
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A RESTful API for the Mockbuster DVD rental business.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Mockbuster Movie API.
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json.
+      description: Returns a welcome message for the Mockbuster API.
+      produces:
+      - application/json.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WelcomeResponse'
+      summary: Welcome endpoint.
+      tags:
+      - general.
+  /categories:
+    get:
+      consumes:
+      - application/json.
+      description: Retrieve a list of all available film categories.
+      produces:
+      - application/json.
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Category'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all categories.
+      tags:
+      - categories.
+  /films:
+    get:
+      consumes:
+      - application/json.
+      description: Retrieve a list of films with optional filtering by title, rating,
+        and category.
+      parameters:
+      - description: Search films by title
+        in: query
+        name: title
+        type: string
+      - description: Filter by rating (G, PG, PG-13, R, NC-17)
+        in: query
+        name: rating
+        type: string
+      - description: Filter by category
+        in: query
+        name: category
+        type: string
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of films per page (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.FilmListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get films with optional filters.
+      tags:
+      - films.
+  /films/{id}:
+    get:
+      consumes:
+      - application/json.
+      description: Retrieve detailed information about a specific film.
+      parameters:
+      - description: Film ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Film'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get film by ID.
+      tags:
+      - films.
+  /films/{id}/comments:
+    get:
+      consumes:
+      - application/json.
+      description: Retrieve all customer comments for a specific film.
+      parameters:
+      - description: Film ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json.
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get comments for a film.
+      tags:
+      - comments.
+    post:
+      consumes:
+      - application/json.
+      description: Add a customer comment to a specific film.
+      parameters:
+      - description: Film ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comment details
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.CommentRequest'
+      produces:
+      - application/json.
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Add a comment to a film.
+      tags:
+      - comments.
+schemes:
+- http.
+swagger: "2.0"
