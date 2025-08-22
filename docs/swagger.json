@@ -1,0 +1,463 @@
+{
+    "schemes": [
+        "http."
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "A RESTful API for the Mockbuster DVD rental business.",
+        "title": "Mockbuster Movie API.",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080.",
+    "basePath": "/.",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Returns a welcome message for the Mockbuster API.",
+                "consumes": [
+                    "application/json."
+                ],
+                "produces": [
+                    "application/json."
+                ],
+                "tags": [
+                    "general."
+                ],
+                "summary": "Welcome endpoint.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.WelcomeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "description": "Retrieve a list of all available film categories.",
+                "consumes": [
+                    "application/json."
+                ],
+                "produces": [
+                    "application/json."
+                ],
+                "tags": [
+                    "categories."
+                ],
+                "summary": "Get all categories.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Category"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/films": {
+            "get": {
+                "description": "Retrieve a list of films with optional filtering by title, rating, and category.",
+                "consumes": [
+                    "application/json."
+                ],
+                "produces": [
+                    "application/json."
+                ],
+                "tags": [
+                    "films."
+                ],
+                "summary": "Get films with optional filters.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search films by title",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by rating (G, PG, PG-13, R, NC-17)",
+                        "name": "rating",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by category",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of films per page (default: 10)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.FilmListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/films/{id}": {
+            "get": {
+                "description": "Retrieve detailed information about a specific film.",
+                "consumes": [
+                    "application/json."
+                ],
+                "produces": [
+                    "application/json."
+                ],
+                "tags": [
+                    "films."
+                ],
+                "summary": "Get film by ID.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Film ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Film"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/films/{id}/comments": {
+            "get": {
+                "description": "Retrieve all customer comments for a specific film.",
+                "consumes": [
+                    "application/json."
+                ],
+                "produces": [
+                    "application/json."
+                ],
+                "tags": [
+                    "comments."
+                ],
+                "summary": "Get comments for a film.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Film ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Comment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a customer comment to a specific film.",
+                "consumes": [
+                    "application/json."
+                ],
+                "produces": [
+                    "application/json."
+                ],
+                "tags": [
+                    "comments."
+                ],
+                "summary": "Add a comment to a film.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Film ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Comment details",
+                        "name": "comment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CommentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Category": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Comment": {
+            "type": "object",
+            "required": [
+                "comment",
+                "customer_name",
+                "film_id"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_name": {
+                    "type": "string"
+                },
+                "film_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CommentRequest": {
+            "type": "object",
+            "required": [
+                "comment",
+                "customer_name"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "customer_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ErrorResponse": {
+            "description": "Error response structure.",
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "string",
+                    "example": "database connection failed"
+                },
+                "error": {
+                    "type": "string",
+                    "example": "Failed to retrieve films"
+                }
+            }
+        },
+        "models.Film": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "actors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "film_id": {
+                    "type": "integer"
+                },
+                "language_id": {
+                    "type": "integer"
+                },
+                "last_update": {
+                    "type": "string"
+                },
+                "length": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "string"
+                },
+                "release_year": {
+                    "type": "integer"
+                },
+                "rental_duration": {
+                    "type": "integer"
+                },
+                "rental_rate": {
+                    "type": "number"
+                },
+                "replacement_cost": {
+                    "type": "number"
+                },
+                "special_features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.FilmListResponse": {
+            "type": "object",
+            "properties": {
+                "films": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Film"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.WelcomeResponse": {
+            "description": "Welcome message response.",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Welcome to Mockbuster Movie API!"
+                }
+            }
+        }
+    }
+}
