@@ -1,10 +1,24 @@
 basePath: /.
 definitions:
-  models.Category:
+  models.APIInfoResponse:
     properties:
-      category_id:
-        type: integer
+      description:
+        example: A RESTful API for the Mockbuster DVD rental business
+        type: string
+      documentation:
+        example: http://localhost:8080/swagger/
+        type: string
+      endpoints:
+        example:
+        - GET /api/v1/films
+        items:
+          type: string
+        type: array
       name:
+        example: Mockbuster Movie API
+        type: string
+      version:
+        example: "1.0"
         type: string
     type: object
   models.Comment:
@@ -35,7 +49,6 @@ definitions:
     - customer_name
     type: object
   models.ErrorResponse:
-    description: Error response structure.
     properties:
       details:
         example: database connection failed
@@ -83,21 +96,7 @@ definitions:
     required:
     - title
     type: object
-  models.FilmListResponse:
-    properties:
-      films:
-        items:
-          $ref: '#/definitions/models.Film'
-        type: array
-      limit:
-        type: integer
-      page:
-        type: integer
-      total:
-        type: integer
-    type: object
   models.WelcomeResponse:
-    description: Welcome message response.
     properties:
       message:
         example: Welcome to Mockbuster Movie API!
@@ -109,7 +108,6 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: A RESTful API for the Mockbuster DVD rental business.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -120,59 +118,74 @@ paths:
   /:
     get:
       consumes:
-      - application/json.
-      description: Returns a welcome message for the Mockbuster API.
+      - application/json
+      description: Get a welcome message for the Mockbuster API
       produces:
-      - application/json.
+      - application/json
       responses:
         "200":
-          description: OK
+          description: Welcome message
           schema:
             $ref: '#/definitions/models.WelcomeResponse'
-      summary: Welcome endpoint.
+      summary: Welcome message
       tags:
-      - general.
-  /categories:
+      - general
+  /api/v1:
     get:
       consumes:
-      - application/json.
-      description: Retrieve a list of all available film categories.
+      - application/json
+      description: Get information about the Mockbuster API including available endpoints
       produces:
-      - application/json.
+      - application/json
       responses:
         "200":
-          description: OK
+          description: API information
           schema:
-            items:
-              $ref: '#/definitions/models.Category'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get all categories.
+            $ref: '#/definitions/models.APIInfoResponse'
+      summary: API information
       tags:
-      - categories.
-  /films:
+      - general
+  /api/v1/categories:
     get:
       consumes:
-      - application/json.
+      - application/json
+      description: Retrieve a list of all available film categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of categories
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all film categories
+      tags:
+      - categories
+  /api/v1/films:
+    get:
+      consumes:
+      - application/json
       description: Retrieve a list of films with optional filtering by title, rating,
-        and category.
+        and category, and pagination support
       parameters:
-      - description: Search films by title
+      - description: Filter by film title (partial match)
         in: query
         name: title
         type: string
-      - description: Filter by rating (G, PG, PG-13, R, NC-17)
+      - description: Filter by film rating (e.g., G, PG, PG-13, R, NC-17)
         in: query
         name: rating
         type: string
-      - description: Filter by category
+      - description: Filter by film category
         in: query
         name: category
         type: string
-      - description: 'Page number (default: 1)'
+      - description: 'Page number for pagination (default: 1)'
         in: query
         name: page
         type: integer
@@ -181,28 +194,26 @@ paths:
         name: limit
         type: integer
       produces:
-      - application/json.
+      - application/json
       responses:
         "200":
-          description: OK
+          description: List of films
           schema:
-            $ref: '#/definitions/models.FilmListResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            items:
+              $ref: '#/definitions/models.Film'
+            type: array
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get films with optional filters.
+      summary: Get films with filtering and pagination
       tags:
-      - films.
-  /films/{id}:
+      - films
+  /api/v1/films/{id}:
     get:
       consumes:
-      - application/json.
-      description: Retrieve detailed information about a specific film.
+      - application/json
+      description: Retrieve detailed information about a specific film by its ID
       parameters:
       - description: Film ID
         in: path
@@ -210,32 +221,32 @@ paths:
         required: true
         type: integer
       produces:
-      - application/json.
+      - application/json
       responses:
         "200":
-          description: OK
+          description: Film details
           schema:
             $ref: '#/definitions/models.Film'
         "400":
-          description: Bad Request
+          description: Invalid film ID
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "404":
-          description: Not Found
+          description: Film not found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get film by ID.
+      summary: Get film by ID
       tags:
-      - films.
-  /films/{id}/comments:
+      - films
+  /api/v1/films/{id}/comments:
     get:
       consumes:
-      - application/json.
-      description: Retrieve all customer comments for a specific film.
+      - application/json
+      description: Retrieve all comments for a specific film
       parameters:
       - description: Film ID
         in: path
@@ -243,33 +254,33 @@ paths:
         required: true
         type: integer
       produces:
-      - application/json.
+      - application/json
       responses:
         "200":
-          description: OK
+          description: List of comments
           schema:
             items:
               $ref: '#/definitions/models.Comment'
             type: array
         "400":
-          description: Bad Request
+          description: Invalid film ID
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "404":
-          description: Not Found
+          description: Film not found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get comments for a film.
+      summary: Get comments for a film
       tags:
-      - comments.
+      - comments
     post:
       consumes:
-      - application/json.
-      description: Add a customer comment to a specific film.
+      - application/json
+      description: Add a new comment to a specific film
       parameters:
       - description: Film ID
         in: path
@@ -283,27 +294,27 @@ paths:
         schema:
           $ref: '#/definitions/models.CommentRequest'
       produces:
-      - application/json.
+      - application/json
       responses:
         "201":
-          description: Created
+          description: Comment created
           schema:
             $ref: '#/definitions/models.Comment'
         "400":
-          description: Bad Request
+          description: Invalid request body or validation failed
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "404":
-          description: Not Found
+          description: Film not found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Add a comment to a film.
+      summary: Add a comment to a film
       tags:
-      - comments.
+      - comments
 schemes:
 - http.
 swagger: "2.0"

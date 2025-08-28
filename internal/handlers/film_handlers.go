@@ -34,6 +34,19 @@ func NewFilmHandler(filmService service.FilmService, commentService service.Comm
 }
 
 // GetFilms handles GET /films.
+// @Summary Get films with filtering and pagination
+// @Description Retrieve a list of films with optional filtering by title, rating, and category, and pagination support
+// @Tags films
+// @Accept json
+// @Produce json
+// @Param title query string false "Filter by film title (partial match)"
+// @Param rating query string false "Filter by film rating (e.g., G, PG, PG-13, R, NC-17)"
+// @Param category query string false "Filter by film category"
+// @Param page query int false "Page number for pagination (default: 1)"
+// @Param limit query int false "Number of films per page (default: 10)"
+// @Success 200 {object} []models.Film "List of films"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/v1/films [get]
 func (h *FilmHandler) GetFilms(w http.ResponseWriter, r *http.Request) {
 	// Parse query parameters.
 	filters := models.FilmFilters{
@@ -74,6 +87,17 @@ func (h *FilmHandler) GetFilms(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetFilmByID handles GET /films/{id}.
+// @Summary Get film by ID
+// @Description Retrieve detailed information about a specific film by its ID
+// @Tags films
+// @Accept json
+// @Produce json
+// @Param id path int true "Film ID"
+// @Success 200 {object} models.Film "Film details"
+// @Failure 400 {object} models.ErrorResponse "Invalid film ID"
+// @Failure 404 {object} models.ErrorResponse "Film not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/v1/films/{id} [get]
 func (h *FilmHandler) GetFilmByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filmID, err := strconv.Atoi(vars["id"])
@@ -96,6 +120,14 @@ func (h *FilmHandler) GetFilmByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetCategories handles GET /categories.
+// @Summary Get all film categories
+// @Description Retrieve a list of all available film categories
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Success 200 {array} string "List of categories"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/v1/categories [get]
 func (h *FilmHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 	categories, err := h.filmService.GetCategories(r.Context())
 	if err != nil {
@@ -107,6 +139,18 @@ func (h *FilmHandler) GetCategories(w http.ResponseWriter, r *http.Request) {
 }
 
 // AddComment handles POST /films/{id}/comments.
+// @Summary Add a comment to a film
+// @Description Add a new comment to a specific film
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param id path int true "Film ID"
+// @Param comment body models.CommentRequest true "Comment details"
+// @Success 201 {object} models.Comment "Comment created"
+// @Failure 400 {object} models.ErrorResponse "Invalid request body or validation failed"
+// @Failure 404 {object} models.ErrorResponse "Film not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/v1/films/{id}/comments [post]
 func (h *FilmHandler) AddComment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filmID, err := strconv.Atoi(vars["id"])
@@ -141,6 +185,17 @@ func (h *FilmHandler) AddComment(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetComments handles GET /films/{id}/comments.
+// @Summary Get comments for a film
+// @Description Retrieve all comments for a specific film
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param id path int true "Film ID"
+// @Success 200 {array} models.Comment "List of comments"
+// @Failure 400 {object} models.ErrorResponse "Invalid film ID"
+// @Failure 404 {object} models.ErrorResponse "Film not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/v1/films/{id}/comments [get]
 func (h *FilmHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	filmID, err := strconv.Atoi(vars["id"])
@@ -163,12 +218,26 @@ func (h *FilmHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 }
 
 // WelcomeHandler handles GET /.
+// @Summary Welcome message
+// @Description Get a welcome message for the Mockbuster API
+// @Tags general
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.WelcomeResponse "Welcome message"
+// @Router / [get]
 func WelcomeHandler(w http.ResponseWriter, _ *http.Request) {
 	response := models.WelcomeResponse{Message: "Welcome to Mockbuster Movie API!"}
 	respondWithJSON(w, http.StatusOK, response)
 }
 
 // APIInfoHandler handles GET /api/v1.
+// @Summary API information
+// @Description Get information about the Mockbuster API including available endpoints
+// @Tags general
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.APIInfoResponse "API information"
+// @Router /api/v1 [get]
 func APIInfoHandler(w http.ResponseWriter, _ *http.Request) {
 	response := models.APIInfoResponse{
 		Name:        "Mockbuster Movie API",

@@ -26,20 +26,20 @@ const docTemplate = `{
     "paths": {
         "/": {
             "get": {
-                "description": "Returns a welcome message for the Mockbuster API.",
+                "description": "Get a welcome message for the Mockbuster API",
                 "consumes": [
-                    "application/json."
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json."
+                    "application/json"
                 ],
                 "tags": [
-                    "general."
+                    "general"
                 ],
-                "summary": "Welcome endpoint.",
+                "summary": "Welcome message",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Welcome message",
                         "schema": {
                             "$ref": "#/definitions/models.WelcomeResponse"
                         }
@@ -47,31 +47,54 @@ const docTemplate = `{
                 }
             }
         },
-        "/categories": {
+        "/api/v1": {
             "get": {
-                "description": "Retrieve a list of all available film categories.",
+                "description": "Get information about the Mockbuster API including available endpoints",
                 "consumes": [
-                    "application/json."
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json."
+                    "application/json"
                 ],
                 "tags": [
-                    "categories."
+                    "general"
                 ],
-                "summary": "Get all categories.",
+                "summary": "API information",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "API information",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories": {
+            "get": {
+                "description": "Retrieve a list of all available film categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get all film categories",
+                "responses": {
+                    "200": {
+                        "description": "List of categories",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Category"
+                                "type": "string"
                             }
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -79,41 +102,41 @@ const docTemplate = `{
                 }
             }
         },
-        "/films": {
+        "/api/v1/films": {
             "get": {
-                "description": "Retrieve a list of films with optional filtering by title, rating, and category.",
+                "description": "Retrieve a list of films with optional filtering by title, rating, and category, and pagination support",
                 "consumes": [
-                    "application/json."
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json."
+                    "application/json"
                 ],
                 "tags": [
-                    "films."
+                    "films"
                 ],
-                "summary": "Get films with optional filters.",
+                "summary": "Get films with filtering and pagination",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Search films by title",
+                        "description": "Filter by film title (partial match)",
                         "name": "title",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by rating (G, PG, PG-13, R, NC-17)",
+                        "description": "Filter by film rating (e.g., G, PG, PG-13, R, NC-17)",
                         "name": "rating",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by category",
+                        "description": "Filter by film category",
                         "name": "category",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Page number (default: 1)",
+                        "description": "Page number for pagination (default: 1)",
                         "name": "page",
                         "in": "query"
                     },
@@ -126,19 +149,16 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "List of films",
                         "schema": {
-                            "$ref": "#/definitions/models.FilmListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Film"
+                            }
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -146,19 +166,19 @@ const docTemplate = `{
                 }
             }
         },
-        "/films/{id}": {
+        "/api/v1/films/{id}": {
             "get": {
-                "description": "Retrieve detailed information about a specific film.",
+                "description": "Retrieve detailed information about a specific film by its ID",
                 "consumes": [
-                    "application/json."
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json."
+                    "application/json"
                 ],
                 "tags": [
-                    "films."
+                    "films"
                 ],
-                "summary": "Get film by ID.",
+                "summary": "Get film by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -170,25 +190,25 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Film details",
                         "schema": {
                             "$ref": "#/definitions/models.Film"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid film ID",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Film not found",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -196,19 +216,19 @@ const docTemplate = `{
                 }
             }
         },
-        "/films/{id}/comments": {
+        "/api/v1/films/{id}/comments": {
             "get": {
-                "description": "Retrieve all customer comments for a specific film.",
+                "description": "Retrieve all comments for a specific film",
                 "consumes": [
-                    "application/json."
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json."
+                    "application/json"
                 ],
                 "tags": [
-                    "comments."
+                    "comments"
                 ],
-                "summary": "Get comments for a film.",
+                "summary": "Get comments for a film",
                 "parameters": [
                     {
                         "type": "integer",
@@ -220,7 +240,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "List of comments",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -229,19 +249,19 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid film ID",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Film not found",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -249,17 +269,17 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Add a customer comment to a specific film.",
+                "description": "Add a new comment to a specific film",
                 "consumes": [
-                    "application/json."
+                    "application/json"
                 ],
                 "produces": [
-                    "application/json."
+                    "application/json"
                 ],
                 "tags": [
-                    "comments."
+                    "comments"
                 ],
-                "summary": "Add a comment to a film.",
+                "summary": "Add a comment to a film",
                 "parameters": [
                     {
                         "type": "integer",
@@ -280,25 +300,25 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Comment created",
                         "schema": {
                             "$ref": "#/definitions/models.Comment"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body or validation failed",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Film not found",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -308,14 +328,33 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Category": {
+        "models.APIInfoResponse": {
             "type": "object",
             "properties": {
-                "category_id": {
-                    "type": "integer"
+                "description": {
+                    "type": "string",
+                    "example": "A RESTful API for the Mockbuster DVD rental business"
+                },
+                "documentation": {
+                    "type": "string",
+                    "example": "http://localhost:8080/swagger/"
+                },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "GET /api/v1/films"
+                    ]
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Mockbuster Movie API"
+                },
+                "version": {
+                    "type": "string",
+                    "example": "1.0"
                 }
             }
         },
@@ -360,7 +399,6 @@ const docTemplate = `{
             }
         },
         "models.ErrorResponse": {
-            "description": "Error response structure.",
             "type": "object",
             "properties": {
                 "details": {
@@ -432,28 +470,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.FilmListResponse": {
-            "type": "object",
-            "properties": {
-                "films": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Film"
-                    }
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
         "models.WelcomeResponse": {
-            "description": "Welcome message response.",
             "type": "object",
             "properties": {
                 "message": {
@@ -472,7 +489,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/.",
 	Schemes:          []string{"http."},
 	Title:            "Mockbuster Movie API.",
-	Description:      "A RESTful API for the Mockbuster DVD rental business.",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
